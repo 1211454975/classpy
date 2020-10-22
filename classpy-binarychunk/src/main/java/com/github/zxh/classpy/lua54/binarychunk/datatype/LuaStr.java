@@ -5,14 +5,12 @@ import com.github.zxh.classpy.lua54.binarychunk.BinaryChunkReader;
 
 /**
  * string in binary chunk.
- *
- * @see /lua/src/ldump.c#DumpString()
  */
 public class LuaStr extends BinaryChunkPart {
 
     @Override
     protected void readContent(BinaryChunkReader reader) {
-        LuByte size = new LuByte();
+        VarInt size = new VarInt();
         size.read(reader);
 
         if (size.getValue() == 0) {
@@ -20,11 +18,6 @@ public class LuaStr extends BinaryChunkPart {
         } else if (size.getValue() < 0xFF) {
             super.add("size", size);
             readStr(reader, size.getValue() - 1);
-        } else { // size == 0xFF
-            CSizet xsize = new CSizet();
-            xsize.read(reader);
-            super.add("size", xsize);
-            readStr(reader, (int) xsize.getValue() - 1);
         }
     }
 

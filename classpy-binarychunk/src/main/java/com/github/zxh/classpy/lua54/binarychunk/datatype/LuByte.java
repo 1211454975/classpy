@@ -22,14 +22,11 @@ public class LuByte extends BinaryChunkPart {
         value = reader.readUnsignedByte();
         super.setDesc(Integer.toString(value));
 
-        // todo
+        // TODO
         if (super.getName() != null) {
             switch (super.getName()) {
-                case "sizeof(int)":
-                    reader.setCIntSize(value);
-                    break;
-                case "sizeof(size_t)":
-                    reader.setSizetSize(value);
+                case "sizeof(Instruction)":
+                    reader.setInstrSize(value);
                     break;
                 case "sizeof(lua_Integer)":
                     reader.setLuaIntSize(value);

@@ -2,22 +2,20 @@ package com.github.zxh.classpy.lua54.binarychunk.part;
 
 import com.github.zxh.classpy.common.FilePart;
 import com.github.zxh.classpy.lua54.binarychunk.BinaryChunkPart;
-import com.github.zxh.classpy.lua54.binarychunk.datatype.CInt;
+import com.github.zxh.classpy.lua54.binarychunk.datatype.LuByte;
 import com.github.zxh.classpy.lua54.binarychunk.datatype.LuaStr;
+import com.github.zxh.classpy.lua54.binarychunk.datatype.VarInt;
 
 import java.util.List;
 
-/**
- * debug info.
- *
- * @see /lua/src/ldump.c#DumpDebug()
- */
+// lua5.4.1/lundump.c#loadDebug()
 public class Debug extends BinaryChunkPart {
 
     {
-        table("line_info",  CInt::new);
-        table("loc_vars", LocVar::new);
-        table("upvalues", LuaStr::new);
+        vector("line_info",     LuByte::new);
+        vector("abs_line_info", AbsLineInfo::new);
+        vector("loc_vars",      LocVar::new);
+        vector("upvalues",      LuaStr::new);
     }
 
     public long getLine(int pc) {
@@ -25,7 +23,7 @@ public class Debug extends BinaryChunkPart {
         if (pc + 1 >= locVars.size()) {
             return -1;
         } else {
-            return ((CInt) locVars.get(pc + 1)).getValue();
+            return ((VarInt) locVars.get(pc + 1)).getValue();
         }
     }
 
@@ -47,12 +45,21 @@ public class Debug extends BinaryChunkPart {
         }
     }
 
+    public static class AbsLineInfo extends BinaryChunkPart {
+
+        {
+            varInt("pc");
+            varInt("line");
+        }
+
+    }
+
     public static class LocVar extends BinaryChunkPart {
 
         {
-            str ("var_name");
-            cint("start_pc");
-            cint("end_pc"  );
+            str   ("var_name");
+            varInt("start_pc");
+            varInt("end_pc"  );
         }
 
         @Override

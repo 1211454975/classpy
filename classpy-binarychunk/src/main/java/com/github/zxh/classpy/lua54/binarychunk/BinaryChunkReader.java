@@ -1,13 +1,13 @@
 package com.github.zxh.classpy.lua54.binarychunk;
 
 import com.github.zxh.classpy.common.BytesReader;
+import com.github.zxh.classpy.common.ParseException;
 
 import java.nio.ByteOrder;
 
 public class BinaryChunkReader extends BytesReader {
 
-    private int sizetSize = 4;
-    private int cIntSize = 4;
+    private int instrSize = 4;
     private int luaIntSize = 8;
     private int luaNumSize = 8;
 
@@ -16,17 +16,18 @@ public class BinaryChunkReader extends BytesReader {
     }
 
     // setters
-    public void setSizetSize(int sizetSize) {this.sizetSize = sizetSize;}
-    public void setCIntSize(int cIntSize) {this.cIntSize = cIntSize;}
+    public void setInstrSize(int sizetSize) {this.instrSize = sizetSize;}
     public void setLuaIntSize(int luaIntSize) {this.luaIntSize = luaIntSize;}
     public void setLuaNumSize(int luaNumSize) {this.luaNumSize = luaNumSize;}
 
     public long readSizet() {
-        return sizetSize == 8 ? super.readLong() : super.readUnsignedInt();
+//        return sizetSize == 8 ? super.readLong() : super.readUnsignedInt();
+        throw new RuntimeException("TODO");
     }
 
     public long readCInt() {
-        return cIntSize == 8 ? super.readLong() : super.readInt();
+//        return cIntSize == 8 ? super.readLong() : super.readInt();
+        throw new RuntimeException("TODO");
     }
 
     public long readLuaInt() {
@@ -35,6 +36,25 @@ public class BinaryChunkReader extends BytesReader {
 
     public double readLuaNum() {
         return luaNumSize == 8 ? super.readDouble(): super.readFloat();
+    }
+
+    // lua5.4.1/lundump.c#loadInt()
+    public int readVarInt() {
+        return (int) readUnsigned(Integer.MAX_VALUE);
+    }
+
+    // lua5.4.1/lundump.c#loadUnsigned()
+    private long readUnsigned (long limit) {
+        long x = 0;
+        byte b;
+        limit >>= 7;
+        do {
+            b = readByte();
+            if (x >= limit)
+                throw new ParseException("integer overflow");
+            x = (x << 7) | (b & 0x7f);
+        } while ((b & 0x80) == 0);
+        return x;
     }
 
 }

@@ -36,8 +36,8 @@ public class BinaryChunkPart extends FilePart {
         super.add(name, new LuaInt());
     }
 
-    public void cint(String name) {
-        super.add(name, new CInt());
+    public void varInt(String name) {
+        super.add(name, new VarInt());
     }
 
     public void lua_num(String name) {
@@ -52,8 +52,8 @@ public class BinaryChunkPart extends FilePart {
         super.add(name, new Bytes(n));
     }
 
-    public void table(String name, Supplier<BinaryChunkPart> partSupplier) {
-        super.add(name, new Table(partSupplier));
+    public void vector(String name, Supplier<BinaryChunkPart> partSupplier) {
+        super.add(name, new Vec(partSupplier));
     }
 
 }

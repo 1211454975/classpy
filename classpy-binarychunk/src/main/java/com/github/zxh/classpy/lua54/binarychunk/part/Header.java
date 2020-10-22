@@ -8,9 +8,7 @@ import com.github.zxh.classpy.lua54.binarychunk.datatype.LuaInt;
 
 import java.util.Arrays;
 
-/**
- * Header.
- */
+// lua5.4.1/lundump.c#checkHeader()
 public class Header extends BinaryChunkPart {
 
     private final byte[] _luaSig = {0x1b, 'L', 'u', 'a'};
@@ -18,11 +16,9 @@ public class Header extends BinaryChunkPart {
 
     {
         bytes  ("LUA_SIGNATURE",    4);
-        lu_byte("LUA_VERSION"        );
+        lu_byte("LUAC_VERSION"       );
         lu_byte("LUAC_FORMAT"        );
         bytes  ("LUAC_DATA",        6);
-        lu_byte("sizeof(int)"        );
-        lu_byte("sizeof(size_t)"     );
         lu_byte("sizeof(Instruction)");
         lu_byte("sizeof(lua_Integer)");
         lu_byte("sizeof(lua_Number)" );
@@ -34,7 +30,7 @@ public class Header extends BinaryChunkPart {
     protected void postRead() {
         checkSignature();
         checkLuacData();
-        LuByte luaVersion = (LuByte) super.get("LUA_VERSION");
+        LuByte luaVersion = (LuByte) super.get("LUAC_VERSION");
         luaVersion.setDesc("0x" + Integer.toHexString(luaVersion.getValue()));
         LuaInt luacInt = (LuaInt) super.get("LUAC_INT");
         luacInt.setDesc("0x" + Long.toHexString(luacInt.getValue()));

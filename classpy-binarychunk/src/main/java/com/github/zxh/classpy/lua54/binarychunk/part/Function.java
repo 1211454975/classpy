@@ -2,36 +2,32 @@ package com.github.zxh.classpy.lua54.binarychunk.part;
 
 import com.github.zxh.classpy.common.FilePart;
 import com.github.zxh.classpy.lua54.binarychunk.BinaryChunkPart;
-import com.github.zxh.classpy.lua54.binarychunk.datatype.CInt;
 import com.github.zxh.classpy.lua54.binarychunk.datatype.LuByte;
+import com.github.zxh.classpy.lua54.binarychunk.datatype.VarInt;
 
 import java.util.List;
 
-/**
- * Lua function.
- *
- * @see /lua/src/ldump.c#DumpFunction()
- */
+// lua5.4.1/lundump.c#loadFunction()
 public class Function extends BinaryChunkPart {
 
     {
         str    ("source"                  );
-        cint   ("line_defined"            );
-        cint   ("last_line_defined"       );
+        varInt ("line_defined"            );
+        varInt ("last_line_defined"       );
         lu_byte("num_params"              );
         lu_byte("is_vararg"               );
         lu_byte("max_stack_size"          );
-        table  ("code",   Instruction::new);
-        table  ("constants", Constant::new);
-        table  ("upvalues",   UpValue::new);
-        table  ("protos",    Function::new);
+        vector ("code",   Instruction::new);
+        vector ("constants", Constant::new);
+        vector ("upvalues",   UpValue::new);
+        vector ("protos",    Function::new);
         add    ("debug",       new Debug());
     }
 
     @Override
     public void postRead() {
-        long lineDefined = ((CInt) super.get("line_defined")).getValue();
-        long lastLineDefined = ((CInt) super.get("last_line_defined")).getValue();
+        long lineDefined = ((VarInt) super.get("line_defined")).getValue();
+        long lastLineDefined = ((VarInt) super.get("last_line_defined")).getValue();
         super.setDesc("<" + lineDefined + "," + lastLineDefined + ">");
 
         Debug debug = (Debug) super.get("debug");
